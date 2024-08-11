@@ -45,7 +45,7 @@ const UploadVideo = ({user , setopenModal , openModal}) => {
   return (
     <div className="main-container">
     <div class="modal-card">
-      <p class="cookieHeading">Edit Bio</p>
+      <p class="cookieHeading">Upload Video</p>
       <input
         type="text"
         class="cookieDescription"

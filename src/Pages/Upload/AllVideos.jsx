@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
-import BioModal from "../Modal/BioModal";
-import VideoModal from "../Modal/VideoModal";
 import { BASE_URL } from "../../Api/base";
 import "./style.css";
-import Editbio from "../../Components/Modals/Editbio";
 import SingleVideoCard from "../../Components/Video/SingleVideoCard";
 import { startApiCall } from "../../Helpers/globalFunctions";
 import ApiCall from "../../Api/ApiCall";

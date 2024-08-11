@@ -13,7 +13,7 @@ const UserCard = ({user}) => {
     <>
     <div style={{fontStyle:"italic"}}>FirstName: {user?.first_name} , LastName: {user?.last_name} , email:{user?.email} , phone: {user?.phone}  
     
-    {user?.videos?.length > 2&&
+    {user?.videos?.length > 5 &&
      <button className='goto-view-video' onClick={() => {navigate(MainRoutes.ALLVIDEOS+"/"+user?.first_name+"/"+user?._id )}}> view more </button>
      
      }
