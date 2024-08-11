@@ -11,25 +11,19 @@ const AllUser = ({user}) => {
   const [errorMessage, seterrorMessage] = useState(false);
   const [Loader, setLoader] = useState(false);
   const [allUser, setallUser] = useState([]);
-  const [page, setpage] = useState(1)
-  const [limit, setlimit] = useState(10)
   const [totalPages, settotalPages] = useState()
 
   const getAllUsers = async () =>{
 
       startApiCall(seterrorMessage, setLoader);
       const payload = {
-          filters: {},
-          page,
-          limit
+          filters: {}
       };
       
       const res = await ApiCall("post", VideoEndPoints.getAllUserVideo, payload);
       console.log(res);
       if (res?.success) {
-        setallUser(res?.result?.docs)
-        setpage(res?.result?.page);
-        settotalPages(res?.result?.totalPages)
+        setallUser(res?.result)
         
       } else {
         seterrorMessage(res.error);

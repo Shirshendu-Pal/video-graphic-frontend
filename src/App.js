@@ -30,10 +30,10 @@ function App() {
         element={user ? <Navigate to={MainRoutes.PROFILE} /> : <Login />}
       />
       <Route element={<PrivateRoutes user={user} />}>
-        <Route path="*" element={<User user={user} />} />
+        {/* <Route path="*" element={<User user={user} />} /> */}
         <Route path={MainRoutes.PROFILE} element={<User user={user} />} />
         <Route path={MainRoutes.USERVIDEOS} element={<AllUser user={user} />} />
-        <Route path={MainRoutes.ALLVIDEOS} element={<AllVideos />} />
+        <Route path={MainRoutes.ALLVIDEOSDETAILS} element={<AllVideos />} />
         {/* <Route path={MainRoutes.CUSTOMER} element={<AllUser />} /> */}
       </Route>
     </Routes>

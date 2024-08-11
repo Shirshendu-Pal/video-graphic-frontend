@@ -2,12 +2,11 @@ import React, { useEffect, useState } from 'react'
 import SingleVideoCard from '../Video/SingleVideoCard'
 import "./style.css"
 import { useNavigate } from 'react-router-dom';
+import MainRoutes from '../../Routes/MainRoutes';
 
 const UserCard = ({user}) => {
 
     const navigate = useNavigate();
-
-    console.log("UserCardddddddddddddddddddddd", user)
 
       
   return (
@@ -15,7 +14,7 @@ const UserCard = ({user}) => {
     <div style={{fontStyle:"italic"}}>FirstName: {user?.first_name} , LastName: {user?.last_name} , email:{user?.email} , phone: {user?.phone}  
     
     {user?.videos?.length > 2&&
-     <button className='goto-view-video' onClick={() => navigate()}> view more </button>
+     <button className='goto-view-video' onClick={() => {navigate(MainRoutes.ALLVIDEOS+"/"+user?.first_name+"/"+user?._id )}}> view more </button>
      
      }
     </div>

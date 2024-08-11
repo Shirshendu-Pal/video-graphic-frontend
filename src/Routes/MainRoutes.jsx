@@ -4,7 +4,8 @@ const MainRoutes = {
   LOGIN: "/login",
   PROFILE: "/profile",
   USERVIDEOS: "/user/videos",
-  ALLVIDEOS: "/all-videos"
+  ALLVIDEOS: "/all-videos",
+  ALLVIDEOSDETAILS: "/all-videos/:name/:id"
 };
 
 export default MainRoutes;

@@ -18,8 +18,6 @@ const User = ({ user }) => {
   const [errorMessage, seterrorMessage] = useState(false);
   const [Loader, setLoader] = useState(false);
   const [allVideo, setallVideo] = useState([]);
-  const [page, setpage] = useState(1)
-  const [limit, setlimit] = useState(10)
   const [totalPages, settotalPages] = useState()
 
   const [openUploadModal, setopenUploadModal] = useState(false);
@@ -29,16 +27,12 @@ const User = ({ user }) => {
     startApiCall(seterrorMessage, setLoader);
     const payload = {
         userId: user._id,
-        page,
-        limit
     };
     
     const res = await ApiCall("post", VideoEndPoints.getAllVideos, payload);
     console.log(res);
     if (res?.success) {
-      setallVideo(res?.result?.docs)
-      setpage(res?.result?.page);
-      settotalPages(res?.result?.totalPages)
+      setallVideo(res?.result)
       
     } else {
       seterrorMessage(res.error);
@@ -76,6 +70,7 @@ const User = ({ user }) => {
                 {user.bio}
               </p>
               <button onClick={() => setopenModal(true)}>Edit Bio</button>
+              <p style={{color:"#fff",textAlign:"center"}}>Scroll down ⏬ </p>
             </div>
           </div>
 
