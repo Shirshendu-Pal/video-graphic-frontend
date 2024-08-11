@@ -23,6 +23,8 @@ const Home = () => {
   return (
     <div>
       BASIC REACT PROJECT STRUCTURE EXAMPLE
+      {/* <img src="http://localhost:8001/videos/1723365830609-Best Airfares - Cheap Flights To USA, Canada, Caribbean, Mexico, Central America_ Lowest Airfares.mp4" alt="" srcset="" /> */}
+      <video src="http://localhost:8001/videos/1723365830609-Best Airfares - Cheap Flights To USA, Canada, Caribbean, Mexico, Central America_ Lowest Airfares.mp4"></video>
     </div>
   )
 }

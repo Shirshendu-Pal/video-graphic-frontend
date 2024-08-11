@@ -1,100 +1,119 @@
-import React from "react";
-import BioModal from '../Modal/BioModal'
+import React, { useEffect, useState } from "react";
+import BioModal from "../Modal/BioModal";
 import VideoModal from "../Modal/VideoModal";
+import { BASE_URL } from "../../Api/base";
+import "./style.css";
+import Editbio from "../../Components/Modals/Editbio";
+import SingleVideoCard from "../../Components/Video/SingleVideoCard";
+import { startApiCall } from "../../Helpers/globalFunctions";
+import ApiCall from "../../Api/ApiCall";
+import { VideoEndPoints } from "../../Api/Endpoints";
+import UploadVideo from "../../Components/Modals/UploadVideo";
+import { useNavigate } from "react-router-dom";
+import MainRoutes from "../../Routes/MainRoutes";
 
-const User = () => {
+const User = ({ user }) => {
+  const navigate = useNavigate();
+  const [openModal, setopenModal] = useState(false);
+  const [errorMessage, seterrorMessage] = useState(false);
+  const [Loader, setLoader] = useState(false);
+  const [allVideo, setallVideo] = useState([]);
+  const [page, setpage] = useState(1)
+  const [limit, setlimit] = useState(10)
+  const [totalPages, settotalPages] = useState()
+
+  const [openUploadModal, setopenUploadModal] = useState(false);
+
+  const getVideos = async () =>{
+
+    startApiCall(seterrorMessage, setLoader);
+    const payload = {
+        userId: user._id,
+        page,
+        limit
+    };
+    
+    const res = await ApiCall("post", VideoEndPoints.getAllVideos, payload);
+    console.log(res);
+    if (res?.success) {
+      setallVideo(res?.result?.docs)
+      setpage(res?.result?.page);
+      settotalPages(res?.result?.totalPages)
+      
+    } else {
+      seterrorMessage(res.error);
+      setLoader(false);
+    }
+
+
+
+  }
+  useEffect(() => {
+    getVideos()
+  }, [])
+  
+
   return (
     <>
-      <div className="max-w-screen-lg container mx-auto">
-        <div className="my-20">
-          User's picture
-          <div class="flex items-center border rounded-full h-16 w-16 m-2 mb-5 ...">
-            <img src="path/to/image.jpg" />
-          </div>
-          {/* <div class="rounded-full h-16 w-16 flex bg-teal-400 m-2 mb-8 ..."></div> */}
-          <div className="border rounded-full mb-5 ... ..."></div>
-          <div
-            className=""
-            style={{ display: "flex", justifyContent: "space-between" }}
-          >
-            <h3>Upload Data</h3>
-            <div>
-              <a
-                className="bg-green-500 hover:bg-green-700
-                             text-white px-3 py-2 bordered rounded-md outline-none"
-                onClick={() =>
-                  document.getElementById("my_modal_3").showModal()
-                }
-              >
-                Add Bio
-              </a>
-              <BioModal />
+    <button class="goto-all-video" onClick={() => navigate(MainRoutes.USERVIDEOS)}>All video</button>
+      {!openUploadModal && !openModal && (
+        <>
+          <div className="main-container">
+            <div class="card">
+              <img
+                class="img"
+                src={BASE_URL + "/profile-pic/" + user.profilePic}
+                alt=""
+                srcset=""
+              />
+              {/* </div> */}
+              <small>Firstname: {user.first_name}</small>
+              <small>Lastname: {user.last_name}</small>
+              <small>email: {user.email}</small>
+              <small>phone: {user.phone}</small>
+              <span>Bio</span>
+              <p class="info">
+                {user.bio}
+              </p>
+              <button onClick={() => setopenModal(true)}>Edit Bio</button>
             </div>
           </div>
-          <div className="" style={{ display: "flex", gap: "40px" }}>
-            <div>First Name</div>
-            <div>Last Name</div>
-          </div>
-          <div className="" style={{ display: "flex", gap: "40px" }}>
-            <div>Email</div>
-            <div>Contact</div>
-          </div>
-        </div>
 
-        <div className="Video-section">
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", gap: "50px" }}>
-              <a target="_blank" href="img_forest.jpg">
-                <img
-                  src="https://www.w3schools.com/images/picture.jpg"
-                  alt="Thumbnail"
-                  style={{
-                    border: "1px solid black",
-                    borderRadius: "4px",
-                    padding: "5px",
-                    width: "210px",
-                  }}
-                />
-              </a>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "20px",
-                }}
-              >
-                <p
-                  style={{
-                    width: "500px",
-                    padding: "5px",
-                    border: "1px solid black",
-                  }}
-                >
-                  <b>YouTube Title</b>
-                </p>
-                <p
-                  style={{
-                    height: "100px",
-                    padding: "5px",
-                    border: "1px solid black",
-                  }}
-                >
-                  Description
-                </p>
+          <div>
+            <div className="videos">
+              <div>
+                <h1>My Videos</h1>
               </div>
+              <br />
+              <hr />
+              {allVideo?.map((video) =>{
+
+                return (<div>
+                <SingleVideoCard video={video} />
+              </div>)
+              })}
             </div>
 
-             <a  className="bg-green-500 hover:bg-green-700 w-16 h-16
-                             text-white text-sm px-3 py-3  bordered rounded-full outline-none"
-                             onClick={() =>
-                              document.getElementById("my_modal_4").showModal()
-                            }>
-                               Upload Video
-             </a>
-              <VideoModal />
+            <button className="upload-button" onClick={() => setopenUploadModal(true)}>upload video</button>
           </div>
-        </div>
-      </div>
+        </>
+      )}
+
+      {openModal && (
+        <Editbio
+          user={user}
+          openModal={openModal}
+          setopenModal={setopenModal}
+        />
+      )}
+      {
+        openUploadModal&&(
+          <UploadVideo user={user} 
+          openModal={openUploadModal}
+          setopenModal={setopenUploadModal}
+          />
+        )
+      }
     </>
   );
 };

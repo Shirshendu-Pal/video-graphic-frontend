@@ -1,100 +1,120 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Login from "./Login";
 import { useForm } from "react-hook-form";
+import MainRoutes from "../../Routes/MainRoutes";
+import { useNavigate, useParams } from "react-router-dom";
+import { startApiCall } from '../../Helpers/globalFunctions';
+import {AuthEndPoints}  from "../../Api/Endpoints"
+import "./style.css";
+import ApiCall from "../../Api/ApiCall";
+import toast from "react-hot-toast";
+import ApiLoader from "../../Components/Loaders/ApiLoader";
 
 const Signup = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-  const onSubmit = (data) => console.log(data);
+  const navigate = useNavigate();
+
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [firstName, setfirstName] = useState("");
+  const [lastName, setlastName] = useState("");
+  const [email, setemail] = useState("");
+  const [errorMessage, seterrorMessage] = useState("");
+  const [file, setfile] = useState();
+  const [loader, setLoader] = useState(false);
+
+  const handlePhoneNumberChange = (e) => {
+    const value = e.target.value;
+    const numericValue = value.replace(/[^0-9]/g, "");
+    setPhoneNumber(numericValue);
+  };
+
+  const signUp = async () =>{
+    startApiCall(seterrorMessage, setLoader);
+    const formData = new FormData();
+    const payload = {
+      file: file,
+    first_name: firstName,
+    last_name: lastName,
+    email: email,
+    phone: phoneNumber
+    };
+    for(let [key , value] of Object.entries(payload)){
+      formData.append(key, value);
+    }
+    console.log(formData);
+    const res = await ApiCall("post", AuthEndPoints.userRegister, formData);
+    console.log(res);
+    if (res?.success) {
+      toast.loading("Logged in successfully");
+      navigate(MainRoutes.LOGIN)
+    } else {
+      seterrorMessage(res.error);
+      setLoader(false);
+    }
+  }
+
   return (
     <>
-      <div className="max-w-screen-lg container mx-auto">
-        <div className="my-10">
-          <div className="">
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <h3 className="font-bold text-lg">Create Account</h3>
-              {/*First Name */}
-              <div className="mt-4 space-y-2">
-                <span>First Name</span>
-                <br />
-                <input
-                  type="text"
-                  placeholder="enter your first name"
-                  className="w-80 px-3 py-1 border rounded-md outline-none"
-                  {...register("name", { required: true })}
-                />
-                <br />
-                {errors.name && (
-                  <span className="text-sm text-red-600">
-                    First Name field is required
-                  </span>
-                )}
-              </div>
-              {/*Last Name */}
-              <div className="mt-4 space-y-2">
-                <span>Last Name</span>
-                <br />
-                <input
-                  type="text"
-                  placeholder="enter your last name"
-                  className="w-80 px-3 py-1 border rounded-md outline-none"
-                  {...register("name", { required: true })}
-                />
-                <br />
-                {errors.name && (
-                  <span className="text-sm text-red-600">
-                    Last Name field is required
-                  </span>
-                )}
-              </div>
-              {/*Email */}
-              <div className="mt-4 space-y-2">
-                <span>Email</span>
-                <br />
-                <input
-                  type="email"
-                  placeholder="enter your email"
-                  className="w-80 px-3 py-1 border rounded-md outline-none"
-                  {...register("email", { required: true })}
-                />
-                <br />
-                {errors.email && (
-                  <span className="text-sm text-red-600">
-                    Email field is required
-                  </span>
-                )}
-              </div>
-              {/*Contact Number*/}
-              <div className="mt-4 space-y-2">
-                <span>Contact Number</span>
-                <br />
-                <input
-                  type="tel"
-                  placeholder="enter your contact number"
-                  className="w-80 px-3 py-1 border rounded-md outline-none"
-                  {...register("contact", { required: true })}
-                />
-                <br />
-                {errors.contact && (
-                  <span className="text-sm text-red-600">
-                    Contact Number is required
-                  </span>
-                )}
-              </div>
-              {/*Button */}
-              <div className="mt-4">
-                <button
-                  type="submit"
-                  className="bg-green-500 hover:bg-green-700 text-white px-3 py-2 bordered rounded-md outline-none"
-                >
-                  Submit
-                </button>
-              </div>
-            </form>
+      <div className="main-container">
+        <div class="form-box">
+          <div class="form">
+            <span class="title">Sign up</span>
+            <span class="subtitle">Create a free account with your email.</span>
+            <div class="form-container">
+              <input
+                type="text"
+                class="input"
+                placeholder="First Name"
+                onChange={(e) => setfirstName(e.target.value)}
+                required
+              />
+              <input
+                type="text"
+                class="input"
+                placeholder="Last Name"
+                onChange={(e) => setlastName(e.target.value)}
+                required
+              />
+              <input
+                type="text"
+                className="input number"
+                placeholder="Phone Number"
+                value={phoneNumber}
+                onChange={handlePhoneNumberChange}
+                minLength="10" // Set minimum length for validation
+                pattern="\d{10,}" // Ensure input is at least 10 digits
+                title="Phone number must be at least 10 digits long" // Custom error message
+                required
+              />
+              <input
+                type="email"
+                class="input"
+                placeholder="Email Address"
+                onChange={(e) => setemail(e.target.value)}
+                required
+              />
+               <input
+                type="file"
+                class="input"
+                onChange={(e) => setfile(e.target.files[0])}
+                required
+              />
+            </div>
+            {loader ? <ApiLoader /> : <button onClick={signUp}>
+            
+              
+            Sign up
+            
+            </button>}
+            
+          </div>
+          <div class="form-section">
+            <p>
+              Have an account?{" "}
+              <a href="" onClick={() => navigate(MainRoutes.LOGIN)}>
+                Log in
+              </a>{" "}
+            </p>
           </div>
         </div>
       </div>

@@ -1,70 +1,66 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import MainRoutes from "../../Routes/MainRoutes";
+import { useNavigate, useParams } from "react-router-dom";
+import { startApiCall } from '../../Helpers/globalFunctions';
+import {AuthEndPoints}  from "../../Api/Endpoints"
+import "./style.css";
+import ApiCall from "../../Api/ApiCall";
+import toast from "react-hot-toast";
+import ApiLoader from "../../Components/Loaders/ApiLoader";
+import { resolveErrorMessage } from "../../Api/service";
 
 const Login = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-  const onSubmit = (data) => console.log(data);
+  const navigate = useNavigate();
+  const [firstName, setfirstName] = useState("");
+  const [password, setpassword] = useState("")
+  const [errorMessage, seterrorMessage] = useState("");
+  const [loader, setLoader] = useState(false);
+  
+
+  const signIn = async () => {
+    startApiCall(seterrorMessage, setLoader);
+    const data = {
+      first_name: firstName,
+      password,
+    };
+    const res = await ApiCall("post", AuthEndPoints.userLogin, data);
+    if (res?.success) {
+      toast.loading("Login Success");
+      let data = res?.result
+      let refreshToken = data.tokens.refresh.token ;
+      localStorage.setItem("token", refreshToken);
+      window.location.href = MainRoutes.PROFILE;
+      
+    } else {
+      seterrorMessage(resolveErrorMessage(res.error));
+      setLoader(false);
+    }
+  };
   return (
     <>
-      <div>
-
-      <div className="max-w-screen-lg container mx-auto">
-        <div className="my-10">
-
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <h3 className="font-bold text-lg">Login From Here !</h3>
-          {/*Email */}
-          <div className="mt-4 space-y-2">
-            <span>First Name</span>
-            <br />
-            <input
-              type="text"
-              placeholder="enter your first name"
-              className="w-80 px-3 py-1 border rounded-md outline-none"
-              {...register("name", { required: true })}
-            />
-            <br />
-            {errors.name && (
-              <span className="text-sm text-red-600">
-                First Name is required
-              </span>
-            )}
+      <div className="main-container">
+        <div class="form-box">
+          <div class="form">
+            <span class="title">Sign in</span>
+            <span class="subtitle">Sign in to enjoy the video market place.</span>
+            <div class="form-container">
+              <input type="text" class="input" placeholder="Full Name" onChange={(e) => setfirstName(e.target.value)}/>
+              <input type="password" class="input" placeholder="Password" onChange={(e) => setpassword(e.target.value)}/>
+            </div>
+            <button onClick={signIn}>Sign in</button>
           </div>
-          {/*Password */}
-          <div className="mt-4 space-y-2">
-            <span>Password</span>
-            <br />
-            <input
-              type="password"
-              placeholder="enter your password"
-              className="w-80 px-3 py-1 border rounded-md outline-none"
-              {...register("password", { required: true })}
-            />
-            <br />
-            {errors.password && (
-              <span className="text-sm text-red-600">
-                Password field is required
-              </span>
-            )}
+          <div class="form-section">
+            <p>
+              {" "}
+              Don't have an account?{" "}
+              <a href="" onClick={() => navigate(MainRoutes.Signup)}>
+                Sign up
+              </a>{" "}
+            </p>
           </div>
-          {/*Button */}
-          <div className="mt-4">
-            <button
-              type="submit"
-              className="bg-green-500 hover:bg-green-700
-                             text-white px-3 py-2 bordered rounded-md outline-none"
-            >
-              Login
-            </button>
-          </div>
-        </form>
-      </div>
-      </div>
+        </div>
       </div>
     </>
   );
